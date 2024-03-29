@@ -11,20 +11,23 @@ The code attached here aims at solving a set of ODEs appearing in that context,
 and analysing the properties of their solutions.
 Given a potential $v(x)$ with two minima, it calculates the motion of the field
 $x$ in that potential, subject to the differential equations
-$
+
+$$
 \frac{d^2x}{ds^2} + \frac{3}{r}\frac{dr}{ds}\frac{dx}{ds}
 =
 \frac{dv}{dx},
-$
-$
+$$
+
+$$
 \left(\frac{dr}{ds}\right)^2
 =
 1+\kappa^2 r^2 \left(
 \frac{1}{2} \left(\frac{dx}{ds}
-\right)^2 - v(x).
-$
+\right)^2 - v(x) \right).
+$$
+
 $r(s)$ is an auxiliary field roughly interpreted as the curvature radius of the
-universe.
+de Sitter spacetime.
 
 The equations are parametrised by $\kappa$, which controls the strength of the
 gravitational interaction, and $\xi$, which controls the energy density of the
