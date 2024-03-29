@@ -17,17 +17,28 @@ __date__ = "01/30/2017"
 def critical_ODE(x, E, v, k, d=4):
     """ ODE of the critical solution. x is the domain, E the energy, v the
     potential function, k , d the dimensionality of spacetime. """
+    if E + v(x) < 0:
+        return np.nan
     return (d-1) * k * (2 * E * (E + v(x)))**0.5
+
 
 # Procedure to extract the critical parameter value
 def toOptimize(k, v, v0p=1e-8):
+    def event_zero_energy(x, E):
+        return E[-1] + v.v(x) - 1e-9
+    event_zero_energy.terminal = True
+
     x = np.linspace(v.xF, v.xT, 100)
-    dv = integrate.odeint(lambda E, x: critical_ODE(x, E, v=v.v, k=k), [v0p],
-                          x)[:, 0]
-    if np.isnan(dv[-1]):
+    ode_soln = integrate.solve_ivp(lambda x, E: critical_ODE(x, E, v=v.v, k=k),
+            (v.xF, v.xT),  # range of integration
+            [v0p],  # initial value
+            t_eval=x,  # values to save
+            events=event_zero_energy  # stop at E = -v
+            )
+    if ode_soln.status == 1:
         return -1
     else:
-        return dv[-1]
+        return ode_soln.y[0,-1]
 
 
 # Generic potential
