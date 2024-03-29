@@ -13,17 +13,11 @@ Given a potential $v(x)$ with two minima, it calculates the motion of the field
 $x$ in that potential, subject to the differential equations
 
 $$
-\frac{d^2x}{ds^2} + \frac{3}{r}\frac{dr}{ds}\frac{dx}{ds}
-=
-\frac{dv}{dx},
+\frac{d^2x}{ds^2} + \frac{3}{r}\frac{dr}{ds}\frac{dx}{ds} = \frac{dv}{dx},
 $$
 
 $$
-\left(\frac{dr}{ds}\right)^2
-=
-1+\kappa^2 r^2 \left(
-\frac{1}{2} \left(\frac{dx}{ds}
-\right)^2 - v(x) \right).
+\left(\frac{dr}{ds}\right)^2 = 1+\kappa^2 r^2 \left( \frac{1}{2} \left(\frac{dx}{ds} \right)^2 - v(x) \right).
 $$
 
 $r(s)$ is an auxiliary field roughly interpreted as the curvature radius of the
