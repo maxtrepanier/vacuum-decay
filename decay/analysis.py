@@ -58,7 +58,6 @@ def thinWallSol2(v, alpha, xi, xFs, xTs, lDeltaF=0, lDeltaT=0):
         Delta = (-2*l)**0.5/mu
     else:
         Delta = np.exp(lDeltaT)
-    #print(xTs, l, mu)
 
     if lDeltaT == 0:
         y = (xTs-x)**0.5/Delta
@@ -70,7 +69,6 @@ def thinWallSol2(v, alpha, xi, xFs, xTs, lDeltaF=0, lDeltaT=0):
         rTs = np.sinh(-beta*(0.5*np.log(x-xTs) - lDeltaT))
         rTs[0] = 0
 
-    #print(rFs, rTs)
     r = np.concatenate([rFs[0:50], rTs[50:]])
     r = rFs
     return x, E, r

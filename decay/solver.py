@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-r""" Provides a solver for the equations of motion """
+r""" Provides a solver for the equations of motion of the instanton """
 
 # Dependencies
 import numpy as np
@@ -114,7 +114,6 @@ class InstantonSolverGR(InstantonSolver):
         nbPtsx = 20
         if xf > self.v.xmax:
             raise ValueError("The stop point must be after the maximum")
-        #  return Xf?
 
         def solSub(xFs, xf, lDelta=0, opt=False, rt0=False):
             if xFs > xf and opt:
@@ -421,12 +420,6 @@ class InstantonSolverGR(InstantonSolver):
             if len(xaf) == 1 and Xaf[0][0] != 0:
                 return -1
             return Xnum[-1][1] - Xaf[-1][1]
-            # drnum = self.edo(xnum[-1], Xnum[-1])[0]
-            # dra = (Xaf[-1][0] - Xaf[-2][0])/(xaf[-1] - xaf[-2])
-            # deltadr = np.absolute(np.arctan(drnum) - np.arctan(dra))
-            # # We add an extra factor if it undershoots because we don't want
-            # # the solution
-            # return deltadr if self.overshoot else -deltadr
 
     def solve(self, verbose=False):
         """ This function finds the optimal x0 such that the boundary
@@ -496,7 +489,6 @@ class InstantonSolverGR(InstantonSolver):
         Sfs = integrate.trapz(np.absolute(2*v0)**0.5, self.x)
         vFs = self.v.v(xF, self.xi)
         vTs = self.v.v(xT, self.xi)
-        # Dv = self.v.v(self.v.xF, self.xi) - self.v.v(self.v.xT, self.xi)
         Dvs = vFs-vTs
 
         if Dvs < 0:

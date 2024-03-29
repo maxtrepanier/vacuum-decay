@@ -12,6 +12,7 @@ import warnings
 
 __author__ = "Maxime Trépanier"
 __date__ = "01/30/2017"
+# 29/3/2024: comments added, compatibility with SciPy 1.12
 
 
 def critical_ODE(x, E, v, k, d=4):
@@ -22,8 +23,15 @@ def critical_ODE(x, E, v, k, d=4):
     return (d-1) * k * (2 * E * (E + v(x)))**0.5
 
 
-# Procedure to extract the critical parameter value
 def toOptimize(k, v, v0p=1e-8):
+    """ Finding the zero of this function (for a value of k) gives the critical
+    k_star. This is the value of k s.t. the integral of critical_ODE has E = 0
+    at both xF and xT.
+
+    If k is too small, the solution will become complex before reaching xT, in
+    which case toOptimize returns False. If k is too large, E(xT) > 0, and
+    toOptimize returns E(xT).
+    """
     def event_zero_energy(x, E):
         return E[-1] + v.v(x) - 1e-9
     event_zero_energy.terminal = True
@@ -36,9 +44,9 @@ def toOptimize(k, v, v0p=1e-8):
             events=event_zero_energy  # stop at E = -v
             )
     if ode_soln.status == 1:
-        return -1
+        return -1  # k too small
     else:
-        return ode_soln.y[0,-1]
+        return ode_soln.y[0,-1]  # k too large
 
 
 # Generic potential
@@ -53,14 +61,15 @@ class Potential():
         where v(xminE) = v(xF), which is the minimal energy to have a complete
         transition. """
 
-        self.xF = 0
-        self.xT = 0
-        self.xmax = 0
-        self.xminE = 0
-        self.kc = None
+        self.xF = 0  # position of false vacuum
+        self.xT = 0  # position of true vacuum
+        self.xmax = 0  # maximum of the potential
+        self.xminE = 0  # minimal value of E required for the instanton
+        self.kc = None  # Critical value of k
+        # range of values to search for kc
         self.kcmin = 1e-2
         self.kcmax = 0.8
-        self.name = ""
+        self.name = ""  # name, for identification
 
     def v(self, x, xi=0):
         r""" Returns the value of v(x), with an offset xi s. t.
@@ -91,13 +100,16 @@ class Potential():
         pass
 
     def kstar(self, xi0=0):
-        """ Returns the value of \kappa_c, computed with the positive energy theorem. """
+        """ Saves the value of \kappa_c. Returns the value of \kappa_c,
+        estimated from the positive energy theorem. """
+        # Solving for kc
         if self.kc is None:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 self.kc = optimize.brentq(
                     lambda k: toOptimize(k, self, 1e-8), self.kcmin, self.kcmax, xtol=1e-10)
 
+        # Positive energy thm
         if xi0 == 0:
             return self.kc
         else:
@@ -209,9 +221,6 @@ class PotentialGauss(Potential):
     def __init__(self, dx, wa, wb, hb):
         """ Potential with two Gaussian whose maxima are separated by dx.
         Their width are wa and wb, and the ratio of height is hb. """
-        # self.dx = optimize.newton(
-        #     lambda x: x / wa**2 * np.exp(-0.5 * x**2 / wa**2) +
-        #     hb * (x - dx) / wb**2 * np.exp(-0.5 * (x - dx)**2 / wb**2), dx)
         super().__init__()
         self.wa = wa
         self.wb = wb
@@ -220,7 +229,6 @@ class PotentialGauss(Potential):
         self.xT = optimize.newton(self.dv, dx)-1e-14
         self.xF = optimize.newton(self.dv, 0)+1e-14
         self.xmax = optimize.brentq(self.dv, self.xF + 1e-4, self.xT - 1e-4)
-        # self.xmax = 0
         self.xminE = optimize.brentq(lambda x: self.v(x), self.xmax, self.xT)
         self.name = "gauss-{}-{}-{}-{}".format(dx, wa, wb, hb)
 
